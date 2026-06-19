@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AX 실전 프로젝트 과정 | 풀무원 전사 AI 공개교육</title>
+  <meta name="description" content="코드 몰라도 AI 만든다! 바이브 코딩으로 AI 서비스·에이전트를 기획·구현·배포하는 풀무원 전사 AI 공개교육. 2026.7.15(수) · 25명 선발." />
+
+  <!-- Fonts: Black Han Sans (chunky display) + Pretendard (body) + Space Mono (labels) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neon: { pink:'#ff5cc8', magenta:'#f72fd8', purple:'#9b6bff', blue:'#4d8bff', cyan:'#3fe0ff', lime:'#b6ff5c' },
+            night: { 950:'#0c0b11', 900:'#121019', 800:'#1a1824', 700:'#231f31', 600:'#322c46' },
+          },
+          fontFamily: {
+            sans: ['Pretendard','system-ui','sans-serif'],
+            display: ['"Black Han Sans"','Pretendard','sans-serif'],
+            mono: ['"Space Mono"','ui-monospace','monospace'],
+          },
+          maxWidth: { content: '1140px' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background:#0c0b11; -webkit-font-smoothing: antialiased; }
+
+    /* 그리드 배경 */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+    /* 그라데이션 텍스트 */
+    .text-grad { background: linear-gradient(108deg,#ff7ad9 0%,#a78bff 46%,#4fd6ff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+    .text-grad2 { background: linear-gradient(108deg,#b6ff5c 0%,#3fe0ff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+    .bg-grad { background: linear-gradient(108deg,#ff5cc8 0%,#9b6bff 52%,#3fe0ff 100%); }
+    /* 그라데이션 보더 카드 */
+    .gborder { position:relative; background: linear-gradient(140deg, rgba(255,92,200,.55), rgba(155,107,255,.4) 50%, rgba(63,224,255,.5)); border-radius:26px; padding:1.5px; }
+    .gborder > .inner { background:#15131e; border-radius:24.5px; height:100%; }
+
+    /* WOW 폭발 뱃지 */
+    .burst { clip-path: polygon(50% 0%,60% 20%,83% 12%,78% 35%,100% 43%,82% 56%,95% 78%,70% 75%,62% 100%,50% 82%,38% 100%,30% 75%,5% 78%,18% 56%,0% 43%,22% 35%,17% 12%,40% 20%); }
+
+    /* 점선 디바이더 */
+    .dotline { background-image: radial-gradient(currentColor 1.5px, transparent 1.5px); background-size: 16px 2px; background-repeat: repeat-x; height:2px; }
+
+    /* 등장 애니메이션 */
+    .reveal { opacity:0; transform: translateY(24px); transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+    .reveal.in { opacity:1; transform:none; }
+
+    .eyebrow { font-family:'Space Mono', monospace; letter-spacing:.16em; text-transform:uppercase; }
+    .glow { filter: blur(70px); }
+    .float { animation: float 5s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .spin-slow { animation: spin 14s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    details > summary { list-style:none; } details > summary::-webkit-details-marker { display:none; }
+    details[open] .faq-icon { transform: rotate(45deg); }
+    .faq-icon { transition: transform .3s cubic-bezier(.16,1,.3,1); }
+    ::selection { background:#ff5cc8; color:#0c0b11; }
+  </style>
+</head>
+
+<body class="font-sans text-white/90 antialiased overflow-x-hidden">
+
+  <!-- SVG 그라데이션 정의 -->
+  <svg width="0" height="0" class="absolute"><defs>
+    <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".5" stop-color="#a78bff"/><stop offset="1" stop-color="#4fd6ff"/></linearGradient>
+    <linearGradient id="sg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b6ff5c"/><stop offset="1" stop-color="#3fe0ff"/></linearGradient>
+  </defs></svg>
+
+  <!-- ===================== 헤더 ===================== -->
+  <header id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-transparent">
+    <div class="mx-auto max-w-content px-5 sm:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="#top" class="flex items-center gap-2.5">
+          <img src="pulmuone-logo-white.png" alt="Pulmuone" class="h-8 w-auto" />
+          <span class="h-3.5 w-px bg-white/25"></span>
+          <span class="eyebrow text-[11px] text-neon-cyan pt-0.5">Digital Academy</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-7 text-sm font-bold text-white/65">
+          <a href="#about" class="hover:text-neon-cyan transition">과정</a>
+          <a href="#target" class="hover:text-neon-cyan transition">대상</a>
+          <a href="#curriculum" class="hover:text-neon-cyan transition">커리큘럼</a>
+          <a href="#instructor" class="hover:text-neon-cyan transition">강사</a>
+          <a href="#faq" class="hover:text-neon-cyan transition">FAQ</a>
+        </nav>
+        <a href="https://forms.office.com/r/8dmY5awAJ9" target="_blank" rel="noopener" class="group inline-flex items-center gap-1.5 rounded-full bg-grad px-5 py-2 text-sm font-extrabold text-night-950 transition hover:brightness-110">
+          신청하기
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== 히어로 ===================== -->
+  <section id="top" class="relative overflow-hidden grid-bg pt-28 pb-20 sm:pt-36 sm:pb-28">
+    <!-- 홀로그램 블롭 -->
+    <div class="pointer-events-none absolute -top-24 -left-24 h-80 w-80 rounded-full bg-neon-pink/30 glow"></div>
+    <div class="pointer-events-none absolute top-10 -right-24 h-80 w-80 rounded-full bg-neon-cyan/25 glow"></div>
+    <div class="pointer-events-none absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-neon-purple/25 glow"></div>
+
+    <!-- 세로 사이드 텍스트 -->
+    <div class="hidden lg:block absolute left-6 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
+      <span class="eyebrow text-xs text-white/40 whitespace-nowrap">★ VIBE CODING CLASS · 2026</span>
+    </div>
+
+    <div class="relative mx-auto max-w-content px-5 sm:px-8 text-center">
+      <!-- 상단 태그 -->
+      <div class="reveal flex justify-center">
+        <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 backdrop-blur">
+          <span class="eyebrow text-[11px] text-white/80">pulmuone AX_class</span>
+        </span>
+      </div>
+
+      <!-- 스마일 스티커 -->
+      <div class="reveal mt-7 flex justify-center gap-2">
+        <svg class="w-10 h-10 float" style="animation-delay:0s" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="url(#sg)"/><circle cx="17" cy="20" r="2.6" fill="#0c0b11"/><circle cx="31" cy="20" r="2.6" fill="#0c0b11"/><path d="M16 28c3 5 13 5 16 0" stroke="#0c0b11" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>
+        <svg class="w-10 h-10 float" style="animation-delay:.4s" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="url(#sg2)"/><circle cx="17" cy="20" r="2.6" fill="#0c0b11"/><circle cx="31" cy="20" r="2.6" fill="#0c0b11"/><path d="M16 28c3 5 13 5 16 0" stroke="#0c0b11" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>
+        <svg class="w-10 h-10 float" style="animation-delay:.8s" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="url(#sg)"/><circle cx="17" cy="20" r="2.6" fill="#0c0b11"/><circle cx="31" cy="20" r="2.6" fill="#0c0b11"/><path d="M16 28c3 5 13 5 16 0" stroke="#0c0b11" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>
+      </div>
+
+      <!-- 헤드라인 + WOW -->
+      <div class="relative inline-block mt-7">
+        <!-- WOW 뱃지 -->
+        <div class="hidden sm:flex absolute -top-6 -right-12 lg:-right-24 z-10 burst h-24 w-24 items-center justify-center bg-neon-cyan rotate-12 float">
+          <span class="font-display text-2xl text-night-950 -rotate-12">WOW</span>
+        </div>
+        <div class="hidden sm:flex absolute -bottom-4 -left-12 lg:-left-24 z-10 burst h-20 w-20 items-center justify-center bg-neon-pink -rotate-12 float" style="animation-delay:.6s">
+          <span class="font-display text-xl text-night-950 rotate-12">WOW</span>
+        </div>
+
+        <h1 class="reveal font-display leading-[0.92] tracking-tight">
+          <span class="block text-[3.4rem] sm:text-7xl text-white">AX 실전</span>
+          <span class="block text-[3.4rem] sm:text-7xl text-grad">프로젝트 과정</span>
+        </h1>
+      </div>
+
+      <p class="reveal mx-auto mt-8 max-w-xl text-base sm:text-lg leading-relaxed text-white/65">
+        Gemini · AI Studio · Lovable로 <b class="text-white">기획부터 배포까지</b> 하루 만에!<br class="hidden sm:block" />
+        나만의 AI 서비스·에이전트를 직접 만드는 실습형 과정.
+      </p>
+
+      <div class="reveal mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href="https://forms.office.com/r/8dmY5awAJ9" target="_blank" rel="noopener" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-grad px-8 py-4 text-base font-extrabold text-night-950 shadow-[0_8px_40px_-8px_rgba(255,92,200,.6)] transition hover:-translate-y-0.5 hover:brightness-110">
+          지금 신청하기
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#curriculum" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-4 text-base font-bold text-white transition hover:bg-white/10">
+          커리큘럼 보기
+        </a>
+      </div>
+
+      <!-- (이미지1 기반 콘텐츠 영역 — 추후 추가 예정) -->
+    </div>
+  </section>
+
+  <!-- ===================== 통계 ===================== -->
+  <section class="relative border-y border-white/10 bg-night-900">
+    <div class="mx-auto max-w-content px-5 sm:px-8">
+      <dl class="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/10">
+        <div class="reveal px-4 py-10 text-center">
+          <dt class="eyebrow text-[11px] text-neon-cyan">DATE</dt>
+          <dd class="mt-2.5 font-display text-2xl sm:text-3xl text-grad">7/15(수)</dd>
+        </div>
+        <div class="reveal px-4 py-10 text-center">
+          <dt class="eyebrow text-[11px] text-neon-cyan">TIME</dt>
+          <dd class="mt-2.5 font-display text-2xl sm:text-3xl text-grad">10시~17시</dd>
+        </div>
+        <div class="reveal px-4 py-10 text-center">
+          <dt class="eyebrow text-[11px] text-neon-cyan">SEATS</dt>
+          <dd class="mt-2.5 font-display text-2xl sm:text-3xl text-grad">25명</dd>
+        </div>
+        <div class="reveal px-4 py-10 text-center">
+          <dt class="eyebrow text-[11px] text-neon-cyan">PLACE</dt>
+          <dd class="mt-2.5 font-display text-2xl sm:text-3xl text-grad">수서 5F</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ===================== 과정 소개 ===================== -->
+  <section id="about" class="relative overflow-hidden py-24 sm:py-28">
+    <div class="pointer-events-none absolute top-20 right-0 h-72 w-72 rounded-full bg-neon-purple/15 glow"></div>
+    <div class="relative mx-auto max-w-content px-5 sm:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+        <div class="reveal">
+          <span class="eyebrow text-xs text-neon-cyan">// ABOUT</span>
+          <h2 class="mt-4 font-display text-4xl sm:text-6xl leading-[1.05] text-white">
+            왜 지금 <span class="text-grad">바이브 코딩</span>?
+          </h2>
+          <p class="mt-7 text-[17px] leading-[1.8] text-white/65">
+            이제는 AI를 '쓰는' 걸 넘어, <b class="text-white">업무에 맞춰 직접 만드는</b> 시대.<br>
+            본 과정은 최신 도구로 AI 서비스의 <b class="text-white">기획–구현–배포 전 과정</b>을
+            하루 만에 직접 실습합니다.
+          </p>
+          <div class="mt-8 gborder">
+            <div class="inner p-6">
+              <span class="eyebrow text-[11px] text-neon-lime">GOAL</span>
+              <p class="mt-2.5 text-[15px] leading-relaxed text-white/80">
+                바이브 코딩으로 AI 서비스·에이전트를 기획·구현·배포하며,
+                <b class="text-white">AI 기반 문제해결·업무 구현 역량</b>을 키웁니다.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="reveal gborder" style="transition-delay:.05s"><div class="inner p-6">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-neon-pink/15 text-neon-pink"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0012 2z"/></svg></div>
+            <h3 class="mt-4 font-extrabold text-lg text-white">기획부터 배포까지</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-white/55">요구사항 정의 → 구현 → 실 URL 배포까지 전 주기 경험.</p>
+          </div></div>
+          <div class="reveal gborder" style="transition-delay:.12s"><div class="inner p-6">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-neon-cyan/15 text-neon-cyan"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z"/></svg></div>
+            <h3 class="mt-4 font-extrabold text-lg text-white">진짜 서비스로 배포</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-white/55">구글 로그인·Firebase 연동, 실 URL 배포까지 완성.</p>
+          </div></div>
+          <div class="reveal gborder" style="transition-delay:.12s"><div class="inner p-6">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-neon-purple/15 text-neon-purple"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+            <h3 class="mt-4 font-extrabold text-lg text-white">강사 1:1 코칭</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-white/55">오류 해결·기능 구현·프롬프트 개선까지 밀착 지원.</p>
+          </div></div>
+          <div class="reveal gborder" style="transition-delay:.18s"><div class="inner p-6">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-neon-lime/15 text-neon-lime"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M17 3l3 4-3 4M7 21l-3-4 3-4"/></svg></div>
+            <h3 class="mt-4 font-extrabold text-lg text-white">내 업무에 쓰는 결과물</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-white/55">업무·관심사 연계 주제로 바로 쓰는 서비스 제작.</p>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 풀카피 밴드 ===================== -->
+  <section class="relative overflow-hidden border-y border-white/10 bg-night-900 py-20 sm:py-28">
+    <div class="pointer-events-none absolute inset-0 grid-bg opacity-50"></div>
+    <div class="relative mx-auto max-w-4xl px-5 sm:px-8 text-center">
+      <span class="reveal eyebrow text-xs text-neon-pink">★ WHY IT MATTERS ★</span>
+      <p class="reveal mt-6 font-display text-3xl sm:text-5xl leading-[1.2] text-white">
+        막연했던 아이디어가,<br class="hidden sm:block" />
+        하루 만에 <span class="text-grad">진짜 서비스</span>가 된다.
+      </p>
+      <div class="reveal dotline text-white/20 mt-10 mx-auto max-w-xs"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 교육 대상 ===================== -->
+  <section id="target" class="relative overflow-hidden py-24 sm:py-28">
+    <div class="relative mx-auto max-w-content px-5 sm:px-8">
+      <div class="reveal max-w-2xl">
+        <span class="eyebrow text-xs text-neon-cyan">// WHO</span>
+        <h2 class="mt-4 font-display text-4xl sm:text-6xl leading-tight text-white">이런 분, <span class="text-grad2">바로 너</span></h2>
+      </div>
+      <div class="mt-12 grid md:grid-cols-3 gap-5">
+        <div class="reveal gborder" style="transition-delay:.05s"><div class="inner p-7">
+          <div class="font-display text-3xl text-grad">01</div>
+          <h3 class="mt-3 font-extrabold text-lg text-white">AI를 업무에 직접 쓰고 싶은 분</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/55">아이디어는 있지만 구현이 막막했던 누구나 OK.</p>
+        </div></div>
+        <div class="reveal gborder" style="transition-delay:.12s"><div class="inner p-7">
+          <div class="font-display text-3xl text-grad">02</div>
+          <h3 class="mt-3 font-extrabold text-lg text-white">코딩 경험 1도 없어도 OK</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/55">자연어 프롬프트로 서비스를 만드는 법을 배웁니다.</p>
+        </div></div>
+        <div class="reveal gborder" style="transition-delay:.18s"><div class="inner p-7">
+          <div class="font-display text-3xl text-grad">03</div>
+          <h3 class="mt-3 font-extrabold text-lg text-white">결과물을 남기고 싶은 분</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/55">하루 안에 실제 배포된 나만의 AI 서비스 GET.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 커리큘럼 ===================== -->
+  <section id="curriculum" class="relative overflow-hidden border-y border-white/10 bg-night-900 py-24 sm:py-28">
+    <div class="pointer-events-none absolute -top-10 right-10 h-72 w-72 rounded-full bg-neon-pink/15 glow"></div>
+    <div class="relative mx-auto max-w-4xl px-5 sm:px-8">
+      <div class="reveal max-w-2xl">
+        <span class="eyebrow text-xs text-neon-cyan">// CURRICULUM</span>
+        <h2 class="mt-4 font-display text-4xl sm:text-6xl leading-tight text-white"><span class="text-grad">One-Day</span> Course</h2>
+        <p class="mt-5 text-white/55">문제 정의 → 실서비스 배포 → 나만의 프로젝트까지 단계별 완성.</p>
+      </div>
+
+      <div class="mt-14 space-y-4">
+        <!-- M1 -->
+        <div class="reveal gborder"><div class="inner p-6 sm:p-7">
+          <div class="flex items-start gap-4 sm:gap-6">
+            <span class="font-display text-3xl sm:text-4xl text-grad shrink-0 leading-none">01</span>
+            <div class="flex-1">
+              <div class="flex items-baseline justify-between gap-3">
+                <h3 class="font-extrabold text-lg sm:text-xl text-white">문제 정의와 AI 서비스 기획</h3>
+                <span class="shrink-0 font-mono text-sm text-neon-cyan">1.0H</span>
+              </div>
+              <ul class="mt-3 space-y-1.5 text-[15px] leading-relaxed text-white/60">
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>요구사항정의서(PRD) 개념 및 작성법 학습</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>프로세스 초안 작성 및 기능 추가·수정</li>
+              </ul>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">Gemini · Canvas</span></div>
+            </div>
+          </div>
+        </div></div>
+        <!-- M2 -->
+        <div class="reveal gborder"><div class="inner p-6 sm:p-7">
+          <div class="flex items-start gap-4 sm:gap-6">
+            <span class="font-display text-3xl sm:text-4xl text-grad shrink-0 leading-none">02</span>
+            <div class="flex-1">
+              <div class="flex items-baseline justify-between gap-3">
+                <h3 class="font-extrabold text-lg sm:text-xl text-white">AI 활용 서비스 구현과 검증</h3>
+                <span class="shrink-0 font-mono text-sm text-neon-cyan">1.0H</span>
+              </div>
+              <ul class="mt-3 space-y-1.5 text-[15px] leading-relaxed text-white/60">
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>UI 완성도·기능구현·수정 편의성 기준 두 결과물 비교 분석</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>서비스 목적에 따른 도구 선택 기준 정리</li>
+              </ul>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">Google AI Studio</span><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">Lovable</span></div>
+            </div>
+          </div>
+        </div></div>
+        <!-- M3 -->
+        <div class="reveal gborder"><div class="inner p-6 sm:p-7">
+          <div class="flex items-start gap-4 sm:gap-6">
+            <span class="font-display text-3xl sm:text-4xl text-grad shrink-0 leading-none">03</span>
+            <div class="flex-1">
+              <div class="flex items-baseline justify-between gap-3">
+                <h3 class="font-extrabold text-lg sm:text-xl text-white">AI 서비스 배포 및 운영</h3>
+                <span class="shrink-0 font-mono text-sm text-neon-cyan">0.5H</span>
+              </div>
+              <ul class="mt-3 space-y-1.5 text-[15px] leading-relaxed text-white/60">
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>구글 로그인(OAuth) 연동 및 Firebase DB 구성</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>실 URL 환경 배포 — 전 주기 직접 경험</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>배포 후 오류 점검 및 유지보수 안내</li>
+              </ul>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">AI Studio</span><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">Lovable</span><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">Firebase</span></div>
+            </div>
+          </div>
+        </div></div>
+        <!-- M4 -->
+        <div class="reveal gborder"><div class="inner p-6 sm:p-7">
+          <div class="flex items-start gap-4 sm:gap-6">
+            <span class="font-display text-3xl sm:text-4xl text-grad shrink-0 leading-none">04</span>
+            <div class="flex-1">
+              <div class="flex items-baseline justify-between gap-3">
+                <h3 class="font-extrabold text-lg sm:text-xl text-white">업무 연계 과제 설계</h3>
+                <span class="shrink-0 font-mono text-sm text-neon-cyan">0.5H</span>
+              </div>
+              <ul class="mt-3 space-y-1.5 text-[15px] leading-relaxed text-white/60">
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>바이브 코딩으로 만들기 좋은 서비스 후보 안내</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>업무·관심사 연계 주제 선택 또는 강사 추천</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-pink"></span>개발 방향 및 핵심 기능 구체화</li>
+              </ul>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">Gemini</span><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">AI Studio</span><span class="font-mono text-xs rounded-full border border-white/15 px-3 py-1 text-white/70">Lovable</span></div>
+            </div>
+          </div>
+        </div></div>
+        <!-- M5 -->
+        <div class="reveal" style="background:linear-gradient(108deg,#ff5cc8,#9b6bff 52%,#3fe0ff);border-radius:26px;padding:1.5px"><div class="rounded-[24.5px] bg-night-800 p-6 sm:p-7">
+          <div class="flex items-start gap-4 sm:gap-6">
+            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-grad font-display text-xl text-night-950">05</span>
+            <div class="flex-1">
+              <div class="flex items-baseline justify-between gap-3">
+                <h3 class="font-extrabold text-lg sm:text-xl text-white">실전 프로젝트 개발 <span class="text-neon-lime">★</span></h3>
+                <span class="shrink-0 font-mono text-sm font-bold text-neon-cyan">3.0H</span>
+              </div>
+              <ul class="mt-3 space-y-1.5 text-[15px] leading-relaxed text-white/75">
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-cyan"></span>선정 주제 기반 본인 서비스 자유 개발</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-cyan"></span>강사 1:1 코칭 — 오류 해결 / 기능 / 프롬프트 개선</li>
+                <li class="flex gap-2.5"><span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-neon-cyan"></span>우수 결과물 시연 및 동료 피드백</li>
+              </ul>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="font-mono text-xs rounded-full border border-white/20 px-3 py-1 text-white/80">Gemini</span><span class="font-mono text-xs rounded-full border border-white/20 px-3 py-1 text-white/80">AI Studio</span><span class="font-mono text-xs rounded-full border border-white/20 px-3 py-1 text-white/80">Lovable</span></div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 강사 ===================== -->
+  <section id="instructor" class="relative overflow-hidden py-24 sm:py-28">
+    <div class="pointer-events-none absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-neon-cyan/15 glow"></div>
+    <div class="relative mx-auto max-w-content px-5 sm:px-8">
+      <div class="max-w-3xl">
+        <div class="reveal text-center md:text-left">
+          <span class="eyebrow text-xs text-neon-cyan">// INSTRUCTOR</span>
+          <h2 class="mt-4 font-display text-4xl sm:text-5xl text-white">이한준 <span class="text-2xl text-grad">대표</span></h2>
+          <p class="mt-2 font-mono text-sm text-white/55">Innofit Partners · 이노핏 파트너스</p>
+          <p class="mt-6 text-[16px] leading-[1.8] text-white/65 max-w-2xl">
+            AI 서비스 기획과 바이브 코딩 실습 교육을 다수 진행해 온 현업 중심의 실전형 강사.
+            기획–구현–배포 전 과정을 직접 완성하도록 1:1로 밀착 코칭합니다.
+          </p>
+          <div class="mt-7 flex flex-wrap justify-center md:justify-start gap-2">
+            <span class="font-mono text-xs rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-white/80">AI 서비스 기획</span>
+            <span class="font-mono text-xs rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-white/80">바이브 코딩</span>
+            <span class="font-mono text-xs rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-white/80">1:1 실습 코칭</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 신청 ===================== -->
+  <section id="apply" class="relative overflow-hidden border-y border-white/10 bg-night-900 py-24 sm:py-28">
+    <div class="pointer-events-none absolute inset-0 grid-bg opacity-40"></div>
+    <div class="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 h-72 w-[36rem] rounded-full bg-neon-purple/20 glow"></div>
+    <div class="relative mx-auto max-w-3xl px-5 sm:px-8">
+      <div class="reveal text-center">
+        <span class="eyebrow text-xs text-neon-pink">★ APPLY NOW ★</span>
+        <h2 class="mt-4 font-display text-4xl sm:text-6xl leading-tight text-white">지금 <span class="text-grad">신청</span>하기</h2>
+        <p class="mt-5 text-white/60">
+          선착순 <b class="text-neon-cyan">25명</b> · 신청 마감 <b class="text-white font-mono">2026.07.08</b> <span class="text-white/40">(정원 마감 시 조기 종료)</span>
+        </p>
+      </div>
+
+      <!-- 신청 CTA (클릭 시 Microsoft Forms 새 창으로 이동 → 응답은 OneDrive 엑셀에 자동 저장) -->
+      <div class="reveal mt-10 gborder rounded-[28px]">
+        <div class="inner !rounded-[26px] px-6 py-12 sm:px-10 sm:py-16 text-center">
+          <div class="flex justify-center">
+            <svg class="w-12 h-12 float" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="url(#sg)"/><circle cx="17" cy="20" r="2.6" fill="#0c0b11"/><circle cx="31" cy="20" r="2.6" fill="#0c0b11"/><path d="M16 28c3 5 13 5 16 0" stroke="#0c0b11" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="mt-6 font-display text-2xl sm:text-3xl text-white">신청서 작성하고 <span class="text-grad">합류하기</span></h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-white/60">버튼을 누르면 신청 폼(Microsoft Forms)이 새 창으로 열립니다.<br class="hidden sm:block">작성 내용은 자동으로 안전하게 저장됩니다.</p>
+          <a href="https://forms.office.com/r/8dmY5awAJ9" target="_blank" rel="noopener"
+            class="group mt-8 inline-flex items-center justify-center gap-2.5 rounded-full bg-grad px-10 py-4 text-base sm:text-lg font-extrabold text-night-950 shadow-[0_8px_40px_-8px_rgba(255,92,200,.6)] transition hover:-translate-y-0.5 hover:brightness-110">
+            신청서 작성하러 가기
+            <svg class="w-5 h-5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <p class="mt-5 font-mono text-xs text-white/40">풀무원 M365 계정 로그인 후 작성됩니다</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section id="faq" class="py-24 sm:py-28">
+    <div class="mx-auto max-w-3xl px-5 sm:px-8">
+      <div class="reveal">
+        <span class="eyebrow text-xs text-neon-cyan">// FAQ</span>
+        <h2 class="mt-4 font-display text-4xl sm:text-6xl leading-tight text-white">자주 묻는 질문</h2>
+      </div>
+      <div class="reveal mt-10 space-y-3">
+        <div class="gborder"><details open class="group inner px-5 py-4">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 font-extrabold text-white">
+            <span>코딩을 전혀 몰라도 따라갈 수 있나요?</span>
+            <svg class="faq-icon w-5 h-5 shrink-0 text-neon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <p class="mt-3 text-[15px] leading-relaxed text-white/60">네! 자연어 프롬프트로 만드는 '바이브 코딩'이라 개발 경험이 없어도 OK. 강사가 1:1로 코칭합니다.</p>
+        </details></div>
+        <div class="gborder"><details open class="group inner px-5 py-4">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 font-extrabold text-white">
+            <span>무엇을 준비해 가야 하나요?</span>
+            <svg class="faq-icon w-5 h-5 shrink-0 text-neon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <p class="mt-3 text-[15px] leading-relaxed text-white/60">개인 노트북을 지참해 주세요. AI 도구 계정·환경 안내는 선발 후 사전 메일로 전달드립니다.</p>
+        </details></div>
+        <div class="gborder"><details open class="group inner px-5 py-4">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 font-extrabold text-white">
+            <span>교육 비용이 있나요?</span>
+            <svg class="faq-icon w-5 h-5 shrink-0 text-neon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <p class="mt-3 text-[15px] leading-relaxed text-white/60">전사 임직원 대상 사내 교육으로, 별도의 개인 부담 비용은 없습니다.<br><span class="font-semibold text-neon-pink/90">다만, 교육 당일 불참 시, 교육비(160,000원) 전액 급여 공제됩니다.</span></p>
+        </details></div>
+        <div class="gborder"><details open class="group inner px-5 py-4">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 font-extrabold text-white">
+            <span>선발은 어떻게 이루어지나요?</span>
+            <svg class="faq-icon w-5 h-5 shrink-0 text-neon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <p class="mt-3 text-[15px] leading-relaxed text-white/60">선착순으로 25명을 선발합니다. 선발 결과는 교육 전 이메일로 개별 안내드립니다.</p>
+        </details></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 푸터 ===================== -->
+  <footer class="relative overflow-hidden border-t border-white/10 bg-night-950">
+    <div class="pointer-events-none absolute inset-0 grid-bg opacity-30"></div>
+    <div class="relative mx-auto max-w-content px-5 sm:px-8 py-16">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-10">
+        <div>
+          <div class="font-display text-3xl text-grad">AX 실전 프로젝트 과정</div>
+          <p class="mt-3 text-sm text-white/45 max-w-sm">풀무원 임직원 대상 전사 AI 공개교육 「AX 실전 프로젝트 과정」 신청 페이지.</p>
+        </div>
+        <div class="text-sm">
+          <div class="eyebrow text-[11px] text-neon-cyan">CONTACT</div>
+          <p class="mt-3 text-white/80 font-semibold">CHO 인재개발팀 · 최예전</p>
+          <a href="mailto:yejeon.choi@pulmuone.com" class="font-mono text-[13px] text-white/55 hover:text-neon-cyan transition">yejeon.choi@pulmuone.com</a>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-white/10 pt-6 font-mono text-xs text-white/35">© 2026 Pulmuone Co., Ltd.</div>
+    </div>
+  </footer>
+
+  <!-- ===================== 스크립트 ===================== -->
+  <script>
+    const nav = document.getElementById('nav');
+    const onScroll = () => {
+      if (window.scrollY > 12) { nav.classList.add('bg-night-950/80','backdrop-blur','border-white/10'); nav.classList.remove('border-transparent'); }
+      else { nav.classList.remove('bg-night-950/80','backdrop-blur','border-white/10'); nav.classList.add('border-transparent'); }
+    };
+    window.addEventListener('scroll', onScroll, { passive:true }); onScroll();
+
+    const io = new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }); }, { threshold:0.12 });
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    const cio = new IntersectionObserver((es)=>{ es.forEach(e=>{ if(!e.isIntersecting) return; const el=e.target; const t=parseInt(el.dataset.count,10); const sfx=el.dataset.suffix||''; let c=0; const step=Math.max(1,Math.floor(t/30)); const tick=()=>{ c=Math.min(t,c+step); el.textContent=c+sfx; if(c<t) requestAnimationFrame(tick); }; tick(); cio.unobserve(el); }); }, { threshold:0.6 });
+    document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+  </script>
+</body>
+</html>
